@@ -17,6 +17,3 @@ code-quality = [
 dev = [
     "pytest>=8.3.3",
 ]
-
-[tool.ruff]
-pydocstyle.convention = "numpy"
