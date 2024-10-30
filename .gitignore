@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# Data files
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.h5
+*.parquet
+*.json
+*.feather
+*.pickle
+
+# Environment variables
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Other
+.DS_Store
+Thumbs.db
