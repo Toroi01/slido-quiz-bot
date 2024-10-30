@@ -1,7 +1,9 @@
 import google.generativeai as genai
 import enum
-from quizz_questions import quiz_questions
+from quiz_questions import quiz_questions
 import time
+
+x = 3
 
 
 class AnswerIndex(enum.Enum):

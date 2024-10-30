@@ -1,10 +1,22 @@
 [project]
-name = "slido-quizz-bot"
+name = "slido-quiz-bot"
 version = "0.1.0"
-description = "Add your description here"
+description = "A bot that automatically completes Slido quizzes by providing the correct answers to all questions."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "beautifulsoup4>=4.12.3",
     "google-generativeai>=0.8.3",
 ]
+
+[dependency-groups]
+code-quality = [
+    "pre-commit-hooks>=5.0.0",
+    "ruff>=0.7.1",
+]
+dev = [
+    "pytest>=8.3.3",
+]
+
+[tool.ruff]
+pydocstyle.convention = "numpy"
