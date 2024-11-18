@@ -6,6 +6,7 @@ Known Limitation:
 
 import google.generativeai as genai
 import enum
+from slido_quiz_bot.quizz_question import QuizQuestion
 
 
 class AnswerIndex(enum.Enum):
@@ -28,32 +29,30 @@ class AnswerIndex(enum.Enum):
   NINE = "9"
 
 
-def format_prompt(question: str, choices: list[str]) -> str:
+def format_prompt(quiz_question: QuizQuestion) -> str:
   """
   Formats a prompt for a multiple-choice quiz question.
 
   Args:
-      question (str): The quiz question to be answered.
-      choices (list[str]): A list of possible answer choices.
+      quiz_question (QuizQuestion): The quiz question object containing the question text and answer choices.
 
   Returns:
       str: A formatted string containing the question and its choices, ready for input into the model.
 
   Example:
-      >>> format_prompt("What is the capital of France?", ["Paris", "London", "Berlin", "Madrid"])
+      >>> format_prompt(QuizQuestion("What is the capital of France?", ["Paris", "London", "Berlin", "Madrid"]))
       'Question: What is the capital of France?\nChoices:\n0. Paris\n1. London\n2. Berlin\n3. Madrid\nChoose the best answer (provide the number):'
   """
-  choices_str = "\n".join(f"{i}. {choice}" for i, choice in enumerate(choices))
-  return f"Question: {question}\nChoices:\n{choices_str}\nChoose the best answer (provide the number):"
+  choices_str = "\n".join(f"{i}. {choice}" for i, choice in enumerate(quiz_question.answer_choices))
+  return f"Question: {quiz_question.question}\nChoices:\n{choices_str}\nChoose the best answer (provide the number):"
 
 
-def answer_quiz_question(question: str, answer_choices: list[str]) -> int:
+def answer_quiz_question(quiz_question: QuizQuestion) -> int:
   """
   Uses a generative AI model to answer a multiple-choice quiz question.
 
   Args:
-      question (str): The quiz question to answer.
-      answer_choices (list[str]): List of possible answer choices.
+      quiz_question (QuizQuestion): The quiz question object containing the question text and answer choices.
 
   Returns:
       int: The index of the chosen answer.
@@ -62,7 +61,7 @@ def answer_quiz_question(question: str, answer_choices: list[str]) -> int:
   model = genai.GenerativeModel("gemini-1.5-pro-latest")
 
   # Format the prompt
-  prompt = format_prompt(question, answer_choices)
+  prompt = format_prompt(quiz_question)
 
   # Generate the answer
   try:
