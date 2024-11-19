@@ -40,7 +40,11 @@ def format_prompt(quiz_question: QuizQuestion) -> str:
       str: A formatted string containing the question and its choices, ready for input into the model.
 
   Example:
-      >>> format_prompt(QuizQuestion("What is the capital of France?", ["Paris", "London", "Berlin", "Madrid"]))
+      >>> format_prompt(
+      ...   QuizQuestion(
+      ...     "What is the capital of France?", ["Paris", "London", "Berlin", "Madrid"]
+      ...   )
+      ... )
       'Question: What is the capital of France?\nChoices:\n0. Paris\n1. London\n2. Berlin\n3. Madrid\nChoose the best answer (provide the number):'
   """
   choices_str = "\n".join(f"{i}. {choice}" for i, choice in enumerate(quiz_question.answer_choices))
