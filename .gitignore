@@ -1,0 +1,32 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ignore Hatch cache
+.hatch/
+
+# Ignore Pipenv cache
+.pipenv/
+
+# Ignore Poetry cache
+.poetry/
+
+# Ignore Conda cache
+.env/
+*.lock
+
+# Ignore virtual environment directories
+env/
+venv/
+
+# Ignore Hatchling cache
+.cache/
+
+# Ignore other build artifacts
+*.egg-info/
+*.egg
+*.whl
+dist/
+build/
