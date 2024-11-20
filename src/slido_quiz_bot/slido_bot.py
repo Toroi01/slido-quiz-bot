@@ -55,7 +55,7 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                     quiz_question = QuizQuestion(
                         question=question_text,
                         answer_choices=answer_choices,
-                        correct_answer_index=-1,
+                        correct_answer_index=None,
                     )
                     correct_answer_index = answer_quiz_question(quiz_question)
                     correct_answer = quiz_question.answer_choices[correct_answer_index]

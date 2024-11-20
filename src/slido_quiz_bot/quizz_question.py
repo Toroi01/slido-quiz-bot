@@ -15,9 +15,9 @@ class QuizQuestion:
     Attributes:
         question (str): The quiz question text.
         answer_choices (list[str]): A list of possible answer choices.
-        correct_answer_index (int): The index of the correct answer in the list of choices.
+        correct_answer_index (int|None): The index of the correct answer in the list of choices.
     """
 
     question: str
     answer_choices: list[str]
-    correct_answer_index: int
+    correct_answer_index: int | None
