@@ -3,13 +3,25 @@
 It uses Playwright to simulate user actions in a browser, such as filling in the participant's name,
 waiting for quiz questions, selecting the correct answers, and submitting the responses.
 """
+# TODO: Refactor breaking the huge main logic into small pieces.
 
+import argparse
 import time
 
 from playwright.sync_api import sync_playwright
 
 from slido_quiz_bot.answer_quiz_question import answer_quiz_question
 from slido_quiz_bot.quizz_question import QuizQuestion
+
+
+def is_leaderboard_visible(page):
+    """Check if an element with class 'quiz-statistics' is visible on the page."""
+    try:
+        leaderboard_locator = page.locator(".quiz-statistics")  # Locate elements with the class
+        return leaderboard_locator.is_visible(timeout=3000)  # Adjust timeout as needed
+    except Exception as e:
+        print(f"Leaderboard not detected: {e}")
+        return False
 
 
 def respond_to_slido_quiz(quiz_url, participant_name):
@@ -40,8 +52,10 @@ def respond_to_slido_quiz(quiz_url, participant_name):
         while True:
             try:
                 time.sleep(1)
-                can_send_answer = page.locator('button:text("Send")').is_visible()
-                print(can_send_answer)
+                if is_leaderboard_visible(page):
+                    break
+                send_button_locator = page.locator('button:text("Send")')
+                can_send_answer = send_button_locator.is_visible(timeout=5000)
                 if can_send_answer:
                     # Wait for the question to load
                     page.locator('[data-testid="poll-title"]').wait_for(state="visible")
@@ -69,33 +83,38 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                     print("Waiting for a send button...")
 
             except Exception as e:
-                print(f"Error or no more questions: {e}")
-                raise e
-                break
-
-        page.pause()
+                raise ConnectionAbortedError(f"Error during quiz interaction: {e}") from e
         browser.close()
 
-        # # Loop through questions
-        # while True:
-        #     try:
-        #         # Select the first option as an example (you can add logic here)
-        #         page.click(".answer-option:nth-child(1)")
 
-        #         # Submit the answer
-        #         page.click(".submit-button")
+# Define the CLI entry point
+def main():
+    """Main function to handle the Slido quiz participation.
 
-        #         # Wait for the next question to load
-        #         page.wait_for_selector(".answer-option", timeout=5000)
-        #     except Exception as e:
-        #         print(f"Error or no more questions: {e}")
-        #         break
+    This function sets up an argument parser to accept a Slido quiz URL and
+    participant name, then calls the `respond_to_slido_quiz` function to
+    simulate answering the quiz.
 
-        # # Close the browser
-        # browser.close()
+    Arguments:
+        - slio_url (str): The URL of the Slido quiz.
+        - participant_name (str): The name of the participant (defaults to "Alan Turing").
+
+    Usage:
+        python slido_bot.py -u <slido_url> -n <participant_name>
+        poetry run slido-quiz-bot -u <slido_url> -n <participant_name>
+        slido-quiz-bot -u <slido_url> -n <participant_name>
+    """
+    # Create an argument parser
+    parser = argparse.ArgumentParser(description="Respond to a Slido quiz.")
+    parser.add_argument("-u", "--slio_url", type=str, required=True, help="The Slido quiz URL.")
+    parser.add_argument("-n", "--participant_name", type=str, default="Alan Turing", help="The participant name to answer the quiz.")
+
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Call the function with parsed arguments
+    respond_to_slido_quiz(args.slio_url, args.participant_name)
 
 
-# Replace with your quiz URL and name
-quiz_url = "https://qr.sli.do/4DQ6dA53AX4t99TTL434TD"
-participant_name = "Your Name"
-respond_to_slido_quiz(quiz_url, participant_name)
+if __name__ == "__main__":
+    main()

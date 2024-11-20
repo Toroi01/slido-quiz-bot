@@ -23,3 +23,6 @@ pytest = "^8.3.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+slido-quiz-bot = "slido_quiz_bot.slido_bot:main"
