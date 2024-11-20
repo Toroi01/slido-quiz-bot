@@ -27,6 +27,3 @@ extend-select = [
 
 [lint.pydocstyle]
 convention = "google"
-
-[lint.per-file-ignores]
-"src/slido_quiz_bot/parser.py" = ["ALL"]
