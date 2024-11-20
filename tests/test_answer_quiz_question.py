@@ -1,4 +1,8 @@
-"""Tests for the `answer_quiz_question` function."""
+"""Tests for the `answer_quiz_question` function.
+
+This module contains unit tests to verify the behavior of the `answer_quiz_question`
+function, which utilizes a generative AI model to answer multiple-choice quiz questions.
+"""
 
 from unittest.mock import MagicMock, patch
 
