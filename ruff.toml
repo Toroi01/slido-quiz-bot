@@ -1,8 +1,10 @@
+line-length = 150
 indent-width = 2
 preview = true
 target-version = "py310"
 
-lint.select = [
+[lint]
+select = [
   "F",  # Pyflakes
   "W6",
   "E71",
@@ -32,5 +34,3 @@ lint.select = [
   "FURB110",# if-exp-instead-of-or-operator
   "RUF018", # assignment-in-assert
 ]
-
-line-length = 150
