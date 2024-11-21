@@ -63,7 +63,7 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                     page.locator('[data-testid="poll-title"]').wait_for(state="visible")
                     # Extract the question
                     question_text = page.locator('[data-testid="poll-title"]').text_content()
-                    print(f"Question: {question_text}")
+                    print(f"\nQuestion: {question_text}")
                     # Extract all possible answer texts
                     answers = page.locator(".poll-question-options .MuiFormControlLabel-label")
                     # Use the `all_text_contents` method to get all answer texts
