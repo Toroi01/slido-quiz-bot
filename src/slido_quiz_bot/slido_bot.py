@@ -6,6 +6,7 @@ waiting for quiz questions, selecting the correct answers, and submitting the re
 # TODO: Refactor breaking the huge main logic into small pieces.
 
 import argparse
+import os
 import time
 
 from playwright.sync_api import sync_playwright
@@ -33,7 +34,8 @@ def respond_to_slido_quiz(quiz_url, participant_name):
     """
     with sync_playwright() as p:
         # Launch the browser
-        browser = p.chromium.launch(headless=False)  # Set to True for headless mode
+        is_docker_env = bool(os.getenv("HOSTNAME"))
+        browser = p.chromium.launch(headless=is_docker_env)  # Set to True for headless mode
         page = browser.new_page()
 
         # Open the Slido quiz URL
@@ -61,6 +63,7 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                     page.locator('[data-testid="poll-title"]').wait_for(state="visible")
                     # Extract the question
                     question_text = page.locator('[data-testid="poll-title"]').text_content()
+                    print(f"Question: {question_text}")
                     # Extract all possible answer texts
                     answers = page.locator(".poll-question-options .MuiFormControlLabel-label")
                     # Use the `all_text_contents` method to get all answer texts
@@ -73,6 +76,7 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                     )
                     correct_answer_index = answer_quiz_question(quiz_question)
                     correct_answer = quiz_question.answer_choices[correct_answer_index]
+                    print(f"Answer: {correct_answer}")
                     # Select the correct answer (find the radio button associated with the correct answer)
                     correct_answer_locator = page.locator(f"input[type='radio'][aria-label='{correct_answer}']")
                     correct_answer_locator.click()
@@ -80,7 +84,7 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                     send_button = page.locator('button.poll__btn-submit.btn-primary.doubleScalePulse[type="button"]')
                     send_button.click()
                 else:
-                    print("Waiting for a send button...")
+                    print(".", end="", flush=True)
 
             except Exception as e:
                 raise ConnectionAbortedError(f"Error during quiz interaction: {e}") from e
