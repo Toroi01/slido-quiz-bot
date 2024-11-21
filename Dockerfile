@@ -1,3 +1,11 @@
+# Build the image:
+# docker build -t slido-quiz-bot .
+
+# Run the image:
+# docker run -it --env-file .env slido-quiz-bot -u "<SLIDO URL>" -n "<USER NAME>"
+# Example:
+# docker run -it --env-file .env slido-quiz-bot -u "https://app.sli.do/event/4DQ6dA53AX4t99TTL434TD" -n "Alan Turing"
+
 # Use an official Python runtime as a parent image
 FROM mcr.microsoft.com/playwright/python:v1.48.0-noble
 
@@ -29,5 +37,8 @@ RUN poetry config virtualenvs.create false \
 # Install the browser
 RUN poetry run playwright install
 
-# Run the application
-CMD ["bash"]
+# Entry point to run the bot with parameters passed during container run
+ENTRYPOINT ["poetry", "run", "slido-quiz-bot"]
+
+# Command to pass arguments dynamically at runtime
+CMD ["-u", "<slido_url>", "-n", "<participant_name>"]
