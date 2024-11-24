@@ -6,6 +6,11 @@
 # Example:
 # docker run -it --env-file .env slido-quiz-bot -u "https://app.sli.do/event/4DQ6dA53AX4t99TTL434TD" -n "Alan Turing"
 
+# Pubish the image:
+# docker login
+# docker tag slido-quiz-bot:latest cbot/slido-quiz-bot:latest
+# docker push cbot/slido-quiz-bot:latest
+
 # Use an official Python runtime as a parent image
 FROM mcr.microsoft.com/playwright/python:v1.48.0-noble
 

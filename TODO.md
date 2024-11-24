@@ -5,5 +5,5 @@
 - [ ] Add unit tests for `slido_bot.py`
 - [ ] Update the README
 - [ ] Set up devcontainers
-- [ ] Containerize the application
+- [X] Containerize the application
 - [ ] Use logs instead of prints
