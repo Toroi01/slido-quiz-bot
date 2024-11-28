@@ -12,6 +12,7 @@ import time
 from playwright.sync_api import sync_playwright
 from rich.console import Console
 
+from slido_quiz_bot.answer_quiz_question import answer_quiz_question
 from slido_quiz_bot.quizz_question import QuizQuestion
 
 console = Console()
@@ -77,8 +78,7 @@ def respond_to_slido_quiz(quiz_url, participant_name):
                             answer_choices=answer_choices,
                             correct_answer_index=None,
                         )
-                        # correct_answer_index = answer_quiz_question(quiz_question)
-                        correct_answer_index = 0
+                        correct_answer_index = answer_quiz_question(quiz_question)
                         correct_answer = quiz_question.answer_choices[correct_answer_index]
                         console.log(f"[bold green]Answer:[/bold green] {correct_answer}")
                         # Select the correct answer (find the radio button associated with the correct answer)
