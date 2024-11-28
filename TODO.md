@@ -3,6 +3,7 @@
 ## Tasks to be completed:
 - [X] Refactor the `slido_bot.py` module, break the logic into more mannegable parts
 - [ ] Add unit tests for `slido_bot.py`
+- [ ] Fix tests
 - [ ] Update the README
 - [ ] Set up devcontainers
 - [X] Containerize the application
