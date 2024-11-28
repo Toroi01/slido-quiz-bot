@@ -7,3 +7,4 @@
 - [ ] Set up devcontainers
 - [X] Containerize the application
 - [ ] Use logs instead of prints
+- [ ] Set CI/CD pipeline
