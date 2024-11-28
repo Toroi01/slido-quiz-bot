@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "slido-quiz-bot"
 version = "0.1.0"
-description = "A bot that automatically completes Slido quizzes by providing the correct answers to all questions."
+description = "A bot that automatically completes Slido quizzes by generating answers to all questions using Gemini AI."
 authors = ["Joan Palacios Caballero"]
 readme = "README.md"
 packages = [{include = "slido_quiz_bot", from = "src"}]
