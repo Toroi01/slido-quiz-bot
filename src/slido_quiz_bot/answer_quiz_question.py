@@ -7,8 +7,11 @@ Known Limitation:
 import enum
 
 import google.generativeai as genai
+from rich.console import Console
 
 from slido_quiz_bot.quizz_question import QuizQuestion
+
+console = Console()
 
 
 class AnswerIndex(enum.Enum):
@@ -60,25 +63,29 @@ def answer_quiz_question(quiz_question: QuizQuestion) -> int:
     Returns:
         int: The index of the chosen answer.
     """
-    # Initialize the model
-    model = genai.GenerativeModel("gemini-1.5-pro-latest")
+    # List of models to try in order
+    models = ["gemini-1.5-flash", "gemini-1.5-pro-latest"]
 
     # Format the prompt
     prompt = format_prompt(quiz_question)
 
     # Generate the answer
-    try:
-        answer = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                response_mime_type="text/x.enum",
-                response_schema=AnswerIndex,
-                max_output_tokens=2,
-                temperature=1.0,
-            ),
-        )
-        return int(answer.text.strip())
-    except ValueError as e:
-        raise ValueError("The model's response could not be converted to an integer.") from e
-    except Exception as e:
-        raise RuntimeError(f"An error occurred while generating the answer: {e}") from e
+    for model_name in models:
+        try:
+            model = genai.GenerativeModel(model_name)
+            answer = model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    response_mime_type="text/x.enum",
+                    response_schema=AnswerIndex,
+                    max_output_tokens=2,
+                    temperature=1.0,
+                ),
+            )
+            return int(answer.text.strip())
+        except ValueError as e:
+            raise ValueError(f"Failed to convert model response to integer for model {model_name}: {e}") from e
+        except Exception as e:
+            console.log(f"[bold red] Error with model {model_name}: {e}. Trying next model...")
+
+    raise RuntimeError("All models failed to generate a valid answer.")
