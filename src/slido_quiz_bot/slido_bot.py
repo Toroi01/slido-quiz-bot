@@ -10,9 +10,12 @@ import os
 import time
 
 from playwright.sync_api import sync_playwright
+from rich.console import Console
 
 from slido_quiz_bot.answer_quiz_question import answer_quiz_question
 from slido_quiz_bot.quizz_question import QuizQuestion
+
+console = Console()
 
 
 def is_leaderboard_visible(page):
@@ -50,44 +53,43 @@ def respond_to_slido_quiz(quiz_url, participant_name):
         # Agree to the name usage by enabling the button
         page.click('input[name="participantName"]')  # Ensure focus on the input
         page.click(".btn-primary")  # Click the "Join" button
+        with console.status("[bold blue]Waiting for the Send button to become active..."):
+            while True:
+                try:
+                    time.sleep(1)
+                    if is_leaderboard_visible(page):
+                        console.log("[bold blue] Leaderboard detected. Finishing the program...")
+                        break
+                    send_button_locator = page.locator('button:text("Send")')
+                    can_send_answer = send_button_locator.is_visible(timeout=5000)
+                    if can_send_answer:
+                        # Wait for the question to load
+                        page.locator('[data-testid="poll-title"]').wait_for(state="visible")
+                        # Extract the question
+                        question_text = page.locator('[data-testid="poll-title"]').text_content()
+                        console.log(f"[bold yellow]\nQuestion:[/bold yellow] {question_text}")
+                        # Extract all possible answer texts
+                        answers = page.locator(".poll-question-options .MuiFormControlLabel-label")
+                        # Use the `all_text_contents` method to get all answer texts
+                        answer_choices = answers.all_text_contents()
+                        # Compute the correct answer
+                        quiz_question = QuizQuestion(
+                            question=question_text,
+                            answer_choices=answer_choices,
+                            correct_answer_index=None,
+                        )
+                        correct_answer_index = answer_quiz_question(quiz_question)
+                        correct_answer = quiz_question.answer_choices[correct_answer_index]
+                        console.log(f"[bold green]Answer:[/bold green] {correct_answer}")
+                        # Select the correct answer (find the radio button associated with the correct answer)
+                        correct_answer_locator = page.locator(f"input[type='radio'][aria-label='{correct_answer}']")
+                        correct_answer_locator.click()
+                        # Send the answer
+                        send_button = page.locator('button.poll__btn-submit.btn-primary.doubleScalePulse[type="button"]')
+                        send_button.click()
 
-        while True:
-            try:
-                time.sleep(1)
-                if is_leaderboard_visible(page):
-                    break
-                send_button_locator = page.locator('button:text("Send")')
-                can_send_answer = send_button_locator.is_visible(timeout=5000)
-                if can_send_answer:
-                    # Wait for the question to load
-                    page.locator('[data-testid="poll-title"]').wait_for(state="visible")
-                    # Extract the question
-                    question_text = page.locator('[data-testid="poll-title"]').text_content()
-                    print(f"\nQuestion: {question_text}")
-                    # Extract all possible answer texts
-                    answers = page.locator(".poll-question-options .MuiFormControlLabel-label")
-                    # Use the `all_text_contents` method to get all answer texts
-                    answer_choices = answers.all_text_contents()
-                    # Compute the correct answer
-                    quiz_question = QuizQuestion(
-                        question=question_text,
-                        answer_choices=answer_choices,
-                        correct_answer_index=None,
-                    )
-                    correct_answer_index = answer_quiz_question(quiz_question)
-                    correct_answer = quiz_question.answer_choices[correct_answer_index]
-                    print(f"Answer: {correct_answer}")
-                    # Select the correct answer (find the radio button associated with the correct answer)
-                    correct_answer_locator = page.locator(f"input[type='radio'][aria-label='{correct_answer}']")
-                    correct_answer_locator.click()
-                    # Send the answer
-                    send_button = page.locator('button.poll__btn-submit.btn-primary.doubleScalePulse[type="button"]')
-                    send_button.click()
-                else:
-                    print(".", end="", flush=True)
-
-            except Exception as e:
-                raise ConnectionAbortedError(f"Error during quiz interaction: {e}") from e
+                except Exception as e:
+                    raise ConnectionAbortedError(f"Error during quiz interaction: {e}") from e
         browser.close()
 
 
