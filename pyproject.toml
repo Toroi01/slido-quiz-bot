@@ -26,4 +26,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-slido-quiz-bot = "slido_quiz_bot.slido_bot:main"
+slido-quiz-bot = "slido_quiz_bot.__main__:main"
