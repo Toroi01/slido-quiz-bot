@@ -9,11 +9,16 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from slido_quiz_bot.answer_quiz_question import answer_quiz_question, format_prompt
+from slido_quiz_bot.quizz_question import QuizQuestion
 
 
-def test_format_prompt(dummy_quiz_questions):
+def test_format_prompt():
     """Test the formatting of quiz question prompts."""
-    quiz_question = dummy_quiz_questions[0]  # Use the first question
+    quiz_question = QuizQuestion(
+        question="What is the capital of France?",
+        answer_choices=["Berlin", "Madrid", "Paris", "Rome"],
+        correct_answer_index=2,  # Paris is the correct answer
+    )
     expected_output = (
         "Question: What is the capital of France?\nChoices:\n0. Berlin\n1. Madrid\n2. Paris\n3. Rome\nChoose the best answer (provide the number):"
     )
@@ -50,7 +55,7 @@ def test_answer_quiz_question_invalid_response(dummy_quiz_questions):
         mock_model.generate_content.return_value.text = "invalid"
         mock_model_class.return_value = mock_model
 
-        with pytest.raises(ValueError, match="The model's response could not be converted to an integer."):
+        with pytest.raises(ValueError, match=r"Failed to convert model response to integer for model .*: .*"):
             answer_quiz_question(quiz_question)
 
 
@@ -63,5 +68,5 @@ def test_answer_quiz_question_model_error(dummy_quiz_questions):
         mock_model.generate_content.side_effect = RuntimeError("Model failure")
         mock_model_class.return_value = mock_model
 
-        with pytest.raises(RuntimeError, match="An error occurred while generating the answer: Model failure"):
+        with pytest.raises(RuntimeError, match="All models failed to generate a valid answer."):
             answer_quiz_question(quiz_question)
