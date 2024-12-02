@@ -2,11 +2,11 @@ name: Python CI/CD with Pre-commit and Poetry
 
 on:
   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches:
-#       - main
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   setup:
