@@ -43,6 +43,7 @@ def enter_participant_name(page, participant_name):
         # Click the submit button
         submit_button = page.locator(".btn-primary")
         submit_button.click()
+        console.log(f"[bold blue]Successfully entered participant name: [bold green]{participant_name}[/bold green].")
 
     except page.TimeoutError as exc:
         raise TimeoutError("The participant name input field or the submit button could not be found.") from exc
