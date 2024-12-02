@@ -8,4 +8,6 @@
 - [ ] Set up devcontainers
 - [X] Containerize the application
 - [X] Use logs instead of prints
-- [ ] Set CI/CD pipeline
+- [X] Set CI/CD pipeline
+- [ ] Refactor CI/CD pipeline
+- [ ] Create publish Docker pipeline
