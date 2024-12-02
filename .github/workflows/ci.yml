@@ -11,32 +11,76 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
-
+    outputs:
+      python-cache-hit: ${{ steps.python-cache.outputs.cache-hit }}
+      pre-commit-cache-hit: ${{ steps.pre-commit-cache.outputs.cache-hit }}
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
+      - name: Cache Python dependencies
+        id: python-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-pip-
 
-    - name: Install dependencies with Poetry
-      run: |
-        poetry install
+      - name: Cache Pre-commit dependencies
+        id: pre-commit-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: ${{ runner.os }}-pre-commit-
 
-    - name: Install pre-commit hooks
-      run: |
-        poetry run pre-commit install
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry config virtualenvs.create false
 
-    - name: Run Pre-commit hooks
-      run: |
-        poetry run pre-commit run --all-files
+  install:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Run tests with Poetry
-      run: |
-        poetry run pytest --maxfail=1 --disable-warnings -q
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install
+
+  lint:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (cached)
+        run: |
+          poetry install
+
+      - name: Run Pre-commit hooks
+        run: |
+          poetry run pre-commit run --all-files
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (cached)
+        run: |
+          poetry install
+
+      - name: Run tests with Poetry
+        run: |
+          poetry run pytest --maxfail=1 --disable-warnings -q
