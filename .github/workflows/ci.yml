@@ -1,0 +1,45 @@
+name: Python CI/CD with Pre-commit and Poetry
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "poetry config virtualenvs.in-project true" >> $HOME/.poetry/config.toml
+        export PATH="$HOME/.local/bin:$PATH"
+
+    - name: Install dependencies with Poetry
+      run: |
+        poetry install --no-root
+        poetry install --dev
+
+    - name: Install pre-commit hooks
+      run: |
+        poetry run pre-commit install
+
+    - name: Run Pre-commit hooks
+      run: |
+        poetry run pre-commit run --all-files
+
+    - name: Run tests with Poetry
+      run: |
+        poetry run pytest --maxfail=1 --disable-warnings -q
