@@ -27,8 +27,7 @@ jobs:
 
     - name: Install dependencies with Poetry
       run: |
-        poetry install --no-root
-        poetry install --dev
+        poetry install
 
     - name: Install pre-commit hooks
       run: |
