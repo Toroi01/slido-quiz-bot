@@ -10,4 +10,4 @@
 - [X] Use logs instead of prints
 - [X] Set CI/CD pipeline
 - [ ] Refactor CI/CD pipeline
-- [ ] Create publish Docker pipeline
+- [X] Create publish Docker pipeline
